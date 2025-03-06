@@ -1,0 +1,26 @@
+name: check
+
+on:
+  push:
+    branches:
+      - main
+
+defaults:
+  run:
+    shell: bash -xe {0}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: nixbuild/nix-quick-install-action@v30
+        with:
+          github_access_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Populate the nix store
+        run: nix develop --command echo
+
+      - name: Run reproducer
+        run: nix develop --command ./repro.sh
